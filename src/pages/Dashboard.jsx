@@ -1,11 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../firebase';
-import { collection, addDoc, query, orderBy, onSnapshot } from 'firebase/firestore';
-import { useAuth } from '../contexts/AuthContext';
+import { getExpenses, saveExpenses, getCategories, saveCategories } from '../utils/data';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const Dashboard = () => {
-  const { currentUser } = useAuth();
   const [expenses, setExpenses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [amount, setAmount] = useState('');
@@ -18,7 +15,7 @@ const Dashboard = () => {
 
     const monthly = {};
     exps.forEach(exp => {
-      const expDate = exp.date.toDate();
+      const expDate = exp.date;
       if (expDate.getMonth() === currentMonth && expDate.getFullYear() === currentYear) {
         if (!monthly[exp.category]) {
           monthly[exp.category] = 0;
@@ -38,49 +35,32 @@ const Dashboard = () => {
   }, [categories]);
 
   useEffect(() => {
-    // Cargar categorías
-    const categoriesQuery = collection(db, 'categories');
-    const unsubscribeCategories = onSnapshot(categoriesQuery, (snapshot) => {
-      const cats = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setCategories(cats);
-      if (cats.length > 0 && !selectedCategory) {
-        setSelectedCategory(cats[0].id);
-      }
-    });
-
-    // Cargar gastos del usuario
-    if (currentUser) {
-      const expensesQuery = query(
-        collection(db, 'users', currentUser.uid, 'expenses'),
-        orderBy('date', 'desc')
-      );
-      const unsubscribeExpenses = onSnapshot(expensesQuery, (snapshot) => {
-        const exps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setExpenses(exps);
-        calculateMonthlySummary(exps);
-      });
-
-      return () => {
-        unsubscribeCategories();
-        unsubscribeExpenses();
-      };
+    const cats = getCategories();
+    setCategories(cats);
+    if (cats.length > 0 && !selectedCategory) {
+      setSelectedCategory(cats[0].id);
     }
-  }, [currentUser, categories, calculateMonthlySummary]);
 
-  const handleAddExpense = async (e) => {
+    const exps = getExpenses();
+    setExpenses(exps);
+    calculateMonthlySummary(exps);
+  }, [calculateMonthlySummary]);
+
+  const handleAddExpense = (e) => {
     e.preventDefault();
     if (!amount || !selectedCategory) return;
 
-    try {
-      await addDoc(collection(db, 'users', currentUser.uid, 'expenses'), {
-        amount: parseFloat(amount),
-        category: selectedCategory,
-        date: new Date(),
-      });
-      setAmount('');
-    } catch (error) {
-      console.error('Error adding expense:', error);
-    }
+    const newExpense = {
+      id: Date.now().toString(),
+      amount: parseFloat(amount),
+      category: selectedCategory,
+      date: new Date(),
+    };
+    const updatedExpenses = [newExpense, ...expenses];
+    setExpenses(updatedExpenses);
+    saveExpenses(updatedExpenses);
+    calculateMonthlySummary(updatedExpenses);
+    setAmount('');
   };
 
   // Premium color palette for charts
@@ -137,7 +117,7 @@ const Dashboard = () => {
                     <div className="flex justify-between items-center">
                       <div>
                         <p className="font-medium text-textPrimary-light dark:text-textPrimary-dark">{category ? category.name : 'Desconocido'}</p>
-                        <p className="text-sm text-textSecondary-light dark:text-textSecondary-dark">{exp.date.toDate().toLocaleDateString()}</p>
+                         <p className="text-sm text-textSecondary-light dark:text-textSecondary-dark">{exp.date.toLocaleDateString()}</p>
                       </div>
                       <p className="text-lg font-bold text-textPrimary-light dark:text-textPrimary-dark">${exp.amount.toFixed(2)}</p>
                     </div>

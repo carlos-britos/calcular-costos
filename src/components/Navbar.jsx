@@ -1,7 +1,4 @@
-import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import handleLogout from '../utils/logout';
 
 const SunIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -24,7 +21,6 @@ const MoonIcon = () => (
 );
 
 const Navbar = () => {
-  const { currentUser, userRole } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
 
   return (
@@ -32,14 +28,9 @@ const Navbar = () => {
       <div className="px-6">
         <div className="flex justify-between items-center py-6">
           <div className="flex items-center space-x-6">
-            <Link to="/" className="text-premium-title text-xl hover:text-accent-light dark:hover:text-accent-dark transition-colors">
+            <h1 className="text-premium-title text-xl">
               Seguimiento de Gastos
-            </Link>
-            {currentUser && userRole === 'admin' && (
-              <Link to="/admin" className="text-premium-subtitle hover:text-accent-light dark:hover:text-accent-dark transition-colors">
-                Panel Admin
-              </Link>
-            )}
+            </h1>
           </div>
           <div className="flex items-center space-x-3">
             <button
@@ -49,18 +40,6 @@ const Navbar = () => {
             >
               {isDarkMode ? <SunIcon /> : <MoonIcon />}
             </button>
-            {currentUser ? (
-              <button
-                onClick={handleLogout}
-                className="btn-premium-tonal px-4 py-2"
-              >
-                Cerrar Sesión
-              </button>
-            ) : (
-              <Link to="/login" className="btn-premium-tonal px-4 py-2">
-                Iniciar Sesión
-              </Link>
-            )}
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@
   "name": "calcular-costos",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://carlos-britos.github.io/calcular-costos",
   "type": "module",
   "scripts": {
     "dev": "npx vite",
@@ -13,7 +14,6 @@
   "dependencies": {
     "autoprefixer": "^10.4.0",
     "date-fns": "^2.30.0",
-    "firebase": "^9.23.0",
     "postcss": "^8.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
