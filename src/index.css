@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Custom Properties for Premium Theme System */
+:root {
+  /* Light Mode Variables */
+  --bg-primary: #F8FAFC;
+  --bg-surface: #FFFFFF;
+  --text-primary: #0F172A;
+  --text-secondary: #64748B;
+  --accent: #2563EB;
+  --border: #E2E8F0;
+  --success: #10B981;
+  --danger: #EF4444;
+  
+  /* Typography */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  
+  /* Rendering optimizations */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark Mode Variables */
+.dark {
+  --bg-primary: #0b131c;
+  --bg-surface: #1f293bcc;
+  --text-primary: #FAFAFA;
+  --text-secondary: #A1A1AA;
+  --accent: #3B82F6;
+  --border: #27272A;
+  --success: #10B981;
+  --danger: #F87171;
+}
+
+/* Base styles */
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Premium Component Classes */
+@layer components {
+  /* Glassmorphism Card for Dark Mode */
+  .glass-card {
+    @apply bg-surface-light dark:bg-surface-dark;
+    @apply border border-border-light dark:border-border-dark;
+    @apply rounded-card shadow-premium-light dark:shadow-premium-dark;
+    @apply transition-all duration-300 ease-out;
+  }
+
+    :is(.dark *) .glass-card {
+    background-color: #1b2630cc;
+  }
+
+  :is(.dark *) .bg-bg-dark {
+    background-color: #0b131c;
+  }
+
+  :is(.dark *) .bg-surface-dark {
+    background-color: #1f293bcc;
+  }
+  
+  .glass-card:hover {
+    @apply shadow-premium-light-hover dark:shadow-premium-dark-hover;
+    @apply transform -translate-y-1;
+  }
+  
+  /* Premium Button Styles */
+  .btn-premium {
+    @apply px-6 py-3 rounded-card font-medium transition-all duration-300 ease-out;
+    @apply transform hover:-translate-y-1 hover:shadow-lg;
+  }
+  
+  .btn-premium-primary {
+    @apply bg-gradient-to-r from-accent-light to-accent-dark;
+    @apply text-white hover:from-accent-dark hover:to-accent-light;
+    @apply shadow-premium-light dark:shadow-premium-dark;
+  }
+  
+  .btn-premium-ghost {
+    @apply bg-transparent border-2 border-accent-light dark:border-accent-dark;
+    @apply text-accent-light dark:text-accent-dark;
+    @apply hover:bg-accent-light hover:text-white dark:hover:bg-accent-dark;
+  }
+  
+  .btn-premium-tonal {
+    @apply bg-accent-light/10 dark:bg-accent-dark/20;
+    @apply text-accent-light dark:text-accent-dark;
+    @apply hover:bg-accent-light/20 dark:hover:bg-accent-dark/30;
+    @apply transition-all duration-200;
+  }
+  
+  /* Premium Typography */
+  .text-premium-title {
+    @apply text-3xl font-bold text-textPrimary-light dark:text-textPrimary-dark;
+    @apply tracking-tight;
+  }
+  
+  .text-premium-subtitle {
+    @apply text-lg font-medium text-textSecondary-light dark:text-textSecondary-dark;
+    @apply tracking-normal;
+  }
+  
+  /* Premium Form Elements */
+  .input-premium {
+    @apply w-full px-4 py-3 rounded-card;
+    @apply bg-surface-light dark:bg-surface-dark;
+    @apply border border-border-light dark:border-border-dark;
+    @apply text-textPrimary-light dark:text-textPrimary-dark;
+    @apply placeholder-textSecondary-light dark:placeholder-textSecondary-dark;
+    @apply focus:outline-none focus:ring-2 focus:ring-accent-light dark:focus:ring-accent-dark;
+    @apply focus:border-transparent transition-all duration-200;
+  }
+  
+  .select-premium {
+    @apply input-premium;
+    @apply cursor-pointer;
+  }
+
+  :is(.dark *) .select-premium {
+    background-color: #1d2838;
+  }
+
+  :is(.dark *) .input-premium {
+    background-color: #1d2838;
+  }
+}
+
+/* Chart glow effects for dark mode */
+.dark .chart-glow {
+  filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.3));
+}
+
+/* Modern scrollbar styles */
+.modern-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.modern-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modern-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modern-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+
+.modern-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.7);
+}
+
+.dark .modern-scrollbar {
+  scrollbar-color: rgba(107, 114, 128, 0.5) transparent;
+}
+
+.dark .modern-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(107, 114, 128, 0.5);
+}
+
+.dark .modern-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(107, 114, 128, 0.7);
+}
+
+/* Dark mode body background override */
+.dark body {
+  background-color: #0b131c !important;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease,
+              border-color 0.3s ease,
+              color 0.3s ease,
+              box-shadow 0.3s ease;
+}
