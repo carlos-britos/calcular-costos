@@ -27,3 +27,25 @@ export const getCategories = () => {
 export const saveCategories = (categories) => {
   localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
 };
+
+export const exportData = () => {
+  const expenses = getExpenses();
+  const categories = getCategories();
+  return JSON.stringify({ expenses, categories }, null, 2);
+};
+
+export const importData = (jsonString) => {
+  try {
+    const data = JSON.parse(jsonString);
+    if (data.expenses && Array.isArray(data.expenses)) {
+      saveExpenses(data.expenses.map(exp => ({ ...exp, date: new Date(exp.date) })));
+    }
+    if (data.categories && Array.isArray(data.categories)) {
+      saveCategories(data.categories);
+    }
+    return true;
+  } catch (error) {
+    console.error('Error importing data:', error);
+    return false;
+  }
+};

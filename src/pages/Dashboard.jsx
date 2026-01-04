@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { getExpenses, saveExpenses, getCategories, saveCategories } from '../utils/data';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { getExpenses, saveExpenses, getCategories, saveCategories, exportData, importData } from '../utils/data';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const Dashboard = () => {
@@ -8,6 +8,7 @@ const Dashboard = () => {
   const [amount, setAmount] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [monthlySummary, setMonthlySummary] = useState([]);
+  const fileInputRef = useRef(null);
 
   const calculateMonthlySummary = useCallback((exps) => {
     const currentMonth = new Date().getMonth();
@@ -46,6 +47,40 @@ const Dashboard = () => {
     calculateMonthlySummary(exps);
   }, [calculateMonthlySummary]);
 
+  const handleExport = () => {
+    const data = exportData();
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'gastos-data.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const success = importData(e.target.result);
+        if (success) {
+          const cats = getCategories();
+          setCategories(cats);
+          const exps = getExpenses();
+          setExpenses(exps);
+          calculateMonthlySummary(exps);
+          alert('Datos importados correctamente');
+        } else {
+          alert('Error al importar datos');
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
   const handleAddExpense = (e) => {
     e.preventDefault();
     if (!amount || !selectedCategory) return;
@@ -68,7 +103,30 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-premium-title text-left mb-8">Dashboard de Gastos</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-premium-title">Dashboard de Gastos</h1>
+        <div className="flex gap-2">
+          <button
+            onClick={handleExport}
+            className="btn-premium btn-premium-secondary"
+          >
+            Exportar Datos
+          </button>
+          <button
+            onClick={() => fileInputRef.current.click()}
+            className="btn-premium btn-premium-secondary"
+          >
+            Importar Datos
+          </button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleImport}
+            accept=".json"
+            style={{ display: 'none' }}
+          />
+        </div>
+      </div>
 
       {/* Layout principal en grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
